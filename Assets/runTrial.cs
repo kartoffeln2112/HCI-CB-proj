@@ -2,13 +2,14 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class runTrial : MonoBehaviour
 {
     public int preTrialTime;
-    public int interTrialTime;
+    public float interruptTime;
     public int trialTimeOutTime;
     public int numberTrials;  // for dev purposes
     public static sceneModifier sm;
@@ -19,6 +20,7 @@ public class runTrial : MonoBehaviour
 
     private int currTrial;
     private int[] trialVals;
+
 
     // Start is called before the first frame update
     void Start()
@@ -32,17 +34,17 @@ public class runTrial : MonoBehaviour
         preTrial = false;
 
         // randomize trials
-        trialVals = new int[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 };
-        //System.Random rand = new System.Random();
-        //rand.Shuffle(trialVals);
-
+        System.Random rnd = new System.Random();
+        trialVals = new int[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
+        trialVals = trialVals.OrderBy(x => rnd.Next()).ToArray();
     }
+
 
     // Update is called once per frame
     void Update()
     {
         // start initial trial
-        if (Input.GetKeyDown(KeyCode.Space) && (preTrial == false))
+        if (Input.GetKeyDown(KeyCode.Space) && (preTrial == false) && (currTrial < numberTrials))
         {
             preTrial = true;
             StartCoroutine(startTrial(preTrialTime));
@@ -65,15 +67,15 @@ public class runTrial : MonoBehaviour
                 trialFinish(sm.finTime, trialVals[currTrial]);
             }
         }
-        // continue to next trial
-        if ((currTrial < numberTrials) && (inTrial == true))
+        // continue to next trial after trial ends
+        if ((currTrial < numberTrials) && (inTrial == false))
         {
-            startTrial(interTrialTime);
+            preTrial = false;
         }
-
-        
     }
 
+
+    // starts the a trial instance for the connected scene
     private IEnumerator startTrial(int waitTime)
     {
         // pre trial scene observation
@@ -84,26 +86,29 @@ public class runTrial : MonoBehaviour
         
         // change environment
         screenBlock.SetActive(true);
-        yield return new WaitForSeconds(1);
+        yield return new WaitForSeconds(interruptTime);
         sm.setSceneForTrial(trialVals[currTrial]);
         screenBlock.SetActive(false);
         trialStartTime = DateTime.Now;
         inTrial = true;
     }
 
+
+    // finishes and resets after a trial
     private void trialFinish(DateTime? time, int trialVal)
     {
         screenBlock.SetActive(true);
         outputResults(time, trialVal);
         sm.resetScene(trialVals[currTrial]);
         currTrial++;
-        screenBlock.SetActive(false);
         inTrial = false;
     }
 
+
+    // outputs trial instance results to csv file
     private void outputResults(DateTime? time, int trialVal)
     {
-        using (StreamWriter sw = new StreamWriter("results.csv"))
+        using (StreamWriter sw = File.AppendText("results.csv"))
         {
             sw.WriteLine(currTrial + "," + SceneManager.GetActiveScene().name + "," + (time - trialStartTime) + "," + sm.getTrialType(trialVals[currTrial]) + "," + trialVal);
         }
