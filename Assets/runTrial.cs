@@ -72,6 +72,12 @@ public class runTrial : MonoBehaviour
         {
             preTrial = false;
         }
+
+        // return to scene select after finishing trials
+        if (currTrial >= numberTrials)
+        {
+            SceneManager.LoadScene("scene-select");
+        }
     }
 
 

@@ -15,7 +15,6 @@ using UnityEngine.EventSystems;
 public class objectModifier : MonoBehaviour
 {
     public int tType;
-    public Material trialMat;
     public Vector3 trialPos;
     public Vector3 trialRotate;
     public GameObject trialObj;
@@ -24,7 +23,6 @@ public class objectModifier : MonoBehaviour
     private bool objInTrial;
     private Vector3 ogPos;
     private Vector3 ogRot;
-    private Material ogMat;
 
     // Start is called before the first frame update
     void Start()
@@ -35,12 +33,11 @@ public class objectModifier : MonoBehaviour
         ogPos = transform.position;
         ogRot = transform.rotation.eulerAngles;
         // Debug.Log(ogPos);
-        ogMat = gameObject.GetComponent<Renderer>().material;
 
         // make sure object is not visible if its an addition trial
         if (tType == 3)
         {
-            gameObject.GetComponent<Renderer>().enabled = false;
+            switchVisibilityState(false);
         }
     }
 
@@ -121,12 +118,12 @@ public class objectModifier : MonoBehaviour
         if (objInTrial)
         {
             Debug.Log("remove trial begin");
-            gameObject.GetComponent<Renderer>().enabled = false;
+            switchVisibilityState(false);
         }
         else
         {
             Debug.Log("remove trial end");
-            gameObject.GetComponent<Renderer>().enabled = true;
+            switchVisibilityState(true);
         }
     }
 
@@ -135,13 +132,13 @@ public class objectModifier : MonoBehaviour
         if (objInTrial)
         {
             Debug.Log("replacement trial begin");
-            gameObject.GetComponent<Renderer>().enabled = false;
+            switchVisibilityState(false);
             trialObj.SetActive(true);
         }
         else
         {
             Debug.Log("replacement trial end");
-            gameObject.GetComponent<Renderer>().enabled = true;
+            switchVisibilityState(true);
             trialObj.SetActive(false);
         }
     }
@@ -151,12 +148,36 @@ public class objectModifier : MonoBehaviour
         if (objInTrial)
         {
             Debug.Log("addition trial begin");
-            gameObject.GetComponent<Renderer>().enabled = true;
+            switchVisibilityState(true);
         }
         else
         {
             Debug.Log("addition trial end");
-            gameObject.GetComponent<Renderer>().enabled = false;
+            switchVisibilityState(false);
+        }
+    }
+
+
+    // switches visibility state (using renderer) for an object or group of objects
+    private void switchVisibilityState(bool state)
+    {
+        if (TryGetComponent<Renderer>(out Renderer render))
+        {
+            render.enabled = state;
+            if (gameObject.transform.childCount > 0)
+            {
+                for (int i = 0; i < gameObject.transform.childCount; i++)
+                {
+                    gameObject.transform.GetChild(i).GetComponent<Renderer>().enabled = state;
+                }
+            }
+        }
+        else
+        {
+            for (int i = 0; i < gameObject.transform.childCount; i++)
+            {
+                gameObject.transform.GetChild(i).GetComponent<Renderer>().enabled = state;
+            }
         }
     }
 }
