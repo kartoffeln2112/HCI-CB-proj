@@ -2551,8 +2551,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f6b47d9ce35ce414280e80f809d2cf1d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  preTrialTime: 1
-  interruptTime: 0.5
+  preTrialTime: 3
+  interruptTime: 0.3
   trialTimeOutTime: 45
   numberTrials: 12
 --- !u!1001 &684004493

@@ -4,5 +4,14 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/scene-select.unity
+    guid: 8c8432649cf9c95409ca5eb0c233aac9
+  - enabled: 1
+    path: Assets/style-apt.unity
+    guid: 1c9e7672787963a42aba0dc89e2223d6
+  - enabled: 1
+    path: Assets/real-apt.unity
+    guid: 102eacd157a032a448bcd9597cd885e9
   m_configObjects: {}
